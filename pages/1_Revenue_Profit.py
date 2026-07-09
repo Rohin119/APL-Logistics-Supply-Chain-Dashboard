@@ -2,30 +2,53 @@ import streamlit as st
 import plotly.express as px
 from utils import load_data, apply_filters, calculate_kpis
 
-# ----------------------------------------------------
-# Page Configuration
-# ----------------------------------------------------
+# ==========================================================
+# PAGE CONFIG
+# ==========================================================
+
 st.set_page_config(
     page_title="Revenue & Profit Analysis",
     page_icon="💰",
     layout="wide"
 )
 
-# ----------------------------------------------------
-# Load Data
-# ----------------------------------------------------
+# ==========================================================
+# LOAD DATA
+# ==========================================================
+
 df = load_data()
 filtered_df = apply_filters(df)
 kpi = calculate_kpis(filtered_df)
 
-# ----------------------------------------------------
-# Page Title
-# ----------------------------------------------------
+# ==========================================================
+# CACHE CSV
+# ==========================================================
+
+@st.cache_data
+def convert_csv(df):
+    return df.to_csv(index=False).encode("utf-8")
+
+
+# ==========================================================
+# SAMPLE DATA FOR SCATTER
+# (Huge speed improvement)
+# ==========================================================
+
+scatter_df = filtered_df.sample(
+    min(5000, len(filtered_df)),
+    random_state=42
+)
+
+# ==========================================================
+# TITLE
+# ==========================================================
+
 st.title("💰 Revenue & Profit Analysis")
 
-# ----------------------------------------------------
-# KPI Cards
-# ----------------------------------------------------
+# ==========================================================
+# KPI CARDS
+# ==========================================================
+
 c1, c2, c3, c4, c5 = st.columns(5)
 
 c1.metric("💰 Revenue", f"${kpi['sales']:,.0f}")
@@ -36,13 +59,14 @@ c5.metric("🎯 Avg Discount", f"{kpi['discount']:.2f}%")
 
 st.divider()
 
-# ----------------------------------------------------
-# Revenue vs Profit
-# ----------------------------------------------------
+# ==========================================================
+# REVENUE VS PROFIT
+# ==========================================================
+
 st.subheader("📊 Revenue vs Profit")
 
 fig = px.scatter(
-    filtered_df,
+    scatter_df,
     x="Sales",
     y="Order Profit Per Order",
     color="Market",
@@ -51,11 +75,18 @@ fig = px.scatter(
     title="Revenue vs Profit by Product"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=550)
 
-# ----------------------------------------------------
-# Sales Distribution
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+
+# ==========================================================
+# SALES DISTRIBUTION
+# ==========================================================
+
 st.subheader("📈 Sales Distribution")
 
 fig = px.histogram(
@@ -65,11 +96,18 @@ fig = px.histogram(
     title="Distribution of Sales"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=450)
 
-# ----------------------------------------------------
-# Profit Distribution
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+
+# ==========================================================
+# PROFIT DISTRIBUTION
+# ==========================================================
+
 st.subheader("📉 Profit Distribution")
 
 fig = px.histogram(
@@ -79,18 +117,23 @@ fig = px.histogram(
     title="Distribution of Profit"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=450)
 
-# ----------------------------------------------------
-# Revenue by Market
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+# ==========================================================
+# REVENUE BY MARKET
+# ==========================================================
+
 st.subheader("🌍 Revenue by Market")
 
 market_sales = (
-    filtered_df.groupby("Market")["Sales"]
+    filtered_df.groupby("Market", as_index=False)["Sales"]
     .sum()
-    .sort_values(ascending=False)
-    .reset_index()
+    .sort_values("Sales", ascending=False)
 )
 
 fig = px.bar(
@@ -101,18 +144,24 @@ fig = px.bar(
     title="Revenue by Market"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=450)
 
-# ----------------------------------------------------
-# Profit by Market
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+
+# ==========================================================
+# PROFIT BY MARKET
+# ==========================================================
+
 st.subheader("💵 Profit by Market")
 
 market_profit = (
-    filtered_df.groupby("Market")["Order Profit Per Order"]
+    filtered_df.groupby("Market", as_index=False)["Order Profit Per Order"]
     .sum()
-    .sort_values(ascending=False)
-    .reset_index()
+    .sort_values("Order Profit Per Order", ascending=False)
 )
 
 fig = px.bar(
@@ -123,19 +172,24 @@ fig = px.bar(
     title="Profit by Market"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=450)
 
-# ----------------------------------------------------
-# Top 10 Profitable Products
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+
+# ==========================================================
+# TOP 10 PRODUCTS
+# ==========================================================
+
 st.subheader("🏆 Top 10 Profitable Products")
 
 top_products = (
-    filtered_df.groupby("Product Name")["Order Profit Per Order"]
+    filtered_df.groupby("Product Name", as_index=False)["Order Profit Per Order"]
     .sum()
-    .sort_values(ascending=False)
-    .head(10)
-    .reset_index()
+    .nlargest(10, "Order Profit Per Order")
 )
 
 fig = px.bar(
@@ -146,19 +200,24 @@ fig = px.bar(
     color="Order Profit Per Order"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=500)
 
-# ----------------------------------------------------
-# Bottom 10 Products
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+
+# ==========================================================
+# BOTTOM 10 PRODUCTS
+# ==========================================================
+
 st.subheader("📉 Bottom 10 Products")
 
 bottom_products = (
-    filtered_df.groupby("Product Name")["Order Profit Per Order"]
+    filtered_df.groupby("Product Name", as_index=False)["Order Profit Per Order"]
     .sum()
-    .sort_values()
-    .head(10)
-    .reset_index()
+    .nsmallest(10, "Order Profit Per Order")
 )
 
 fig = px.bar(
@@ -169,18 +228,24 @@ fig = px.bar(
     color="Order Profit Per Order"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=500)
 
-# ----------------------------------------------------
-# Revenue by Category
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+
+# ==========================================================
+# REVENUE BY CATEGORY
+# ==========================================================
+
 st.subheader("📦 Revenue by Category")
 
 category_sales = (
-    filtered_df.groupby("Category Name")["Sales"]
+    filtered_df.groupby("Category Name", as_index=False)["Sales"]
     .sum()
-    .sort_values(ascending=False)
-    .reset_index()
+    .sort_values("Sales", ascending=False)
 )
 
 fig = px.bar(
@@ -190,11 +255,18 @@ fig = px.bar(
     color="Sales"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(height=450)
 
-# ----------------------------------------------------
-# Business Insights
-# ----------------------------------------------------
+st.plotly_chart(
+    fig,
+    use_container_width=True,
+    config={"displayModeBar": False}
+)
+
+# ==========================================================
+# BUSINESS INSIGHTS
+# ==========================================================
+
 st.subheader("💡 Business Insights")
 
 st.info("""
@@ -207,17 +279,25 @@ st.info("""
 • Optimize pricing and discount strategies for products with high revenue but low profit.
 """)
 
-# ----------------------------------------------------
-# Data Table
-# ----------------------------------------------------
+# ==========================================================
+# DATA PREVIEW
+# ==========================================================
+
 st.subheader("📋 Filtered Dataset")
 
-st.dataframe(filtered_df, use_container_width=True)
+st.caption(f"Showing first 100 rows out of {len(filtered_df):,} filtered records.")
 
-# ----------------------------------------------------
-# Download Button
-# ----------------------------------------------------
-csv = filtered_df.to_csv(index=False).encode("utf-8")
+st.dataframe(
+    filtered_df.head(100),
+    use_container_width=True,
+    height=450
+)
+
+# ==========================================================
+# DOWNLOAD
+# ==========================================================
+
+csv = convert_csv(filtered_df)
 
 st.download_button(
     label="⬇ Download Filtered Data",
