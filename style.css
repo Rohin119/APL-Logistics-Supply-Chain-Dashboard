@@ -1,0 +1,265 @@
+/* ===========================
+   GLOBAL
+=========================== */
+
+html,
+body,
+[class*="css"]{
+    font-family:"Segoe UI",sans-serif;
+}
+
+/* ===========================
+   SIDEBAR
+=========================== */
+
+section[data-testid="stSidebar"]{
+    background:#111827;
+    border-right:1px solid #374151;
+}
+
+/* Sidebar Text */
+section[data-testid="stSidebar"] *{
+    color:white !important;
+}
+
+/* ===========================
+   HEADINGS
+=========================== */
+
+h1{
+    color:white !important;
+    font-weight:700;
+}
+
+h2{
+    color:white !important;
+    font-weight:600;
+}
+
+h3{
+    color:#E5E7EB !important;
+}
+
+/* ===========================
+   HERO BANNER
+=========================== */
+
+.hero{
+
+background:linear-gradient(
+135deg,
+#0F172A,
+#1D4ED8,
+#2563EB
+);
+
+padding:45px;
+
+border-radius:20px;
+
+margin-bottom:30px;
+
+box-shadow:0px 10px 25px rgba(0,0,0,.35);
+
+}
+
+.hero h1{
+
+color:white !important;
+
+font-size:50px;
+
+margin-bottom:10px;
+
+}
+
+.hero h3{
+
+color:#DBEAFE !important;
+
+font-size:26px;
+
+margin-bottom:15px;
+
+}
+
+.hero p{
+
+color:white !important;
+
+font-size:18px;
+
+line-height:1.7;
+
+}
+
+.badge{
+
+display:inline-block;
+
+padding:10px 18px;
+
+margin:6px;
+
+border-radius:30px;
+
+background:rgba(255,255,255,.15);
+
+color:white;
+
+font-weight:600;
+
+}
+
+/* ===========================
+   KPI CARDS
+=========================== */
+
+div[data-testid="stMetric"]{
+
+background:#1F2937;
+
+padding:18px;
+
+border-radius:16px;
+
+border-left:5px solid #3B82F6;
+
+box-shadow:0px 6px 18px rgba(0,0,0,.30);
+
+transition:.3s;
+
+}
+
+div[data-testid="stMetric"]:hover{
+
+transform:translateY(-5px);
+
+box-shadow:0px 10px 25px rgba(0,0,0,.45);
+
+}
+
+div[data-testid="stMetricLabel"]{
+
+color:#CBD5E1 !important;
+
+}
+
+div[data-testid="stMetricValue"]{
+
+color:white !important;
+
+font-weight:bold;
+
+}
+
+/* ===========================
+   ALERTS
+=========================== */
+
+div[data-testid="stAlert"]{
+
+border-radius:15px;
+
+background:#1E293B;
+
+border-left:5px solid #3B82F6;
+
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.stButton>button{
+
+background:#2563EB;
+
+color:white;
+
+border:none;
+
+border-radius:10px;
+
+font-weight:bold;
+
+}
+
+.stButton>button:hover{
+
+background:#1D4ED8;
+
+color:white;
+
+}
+
+.stDownloadButton>button{
+
+background:#16A34A;
+
+color:white;
+
+border:none;
+
+border-radius:10px;
+
+font-weight:bold;
+
+}
+
+.stDownloadButton>button:hover{
+
+background:#15803D;
+
+color:white;
+
+}
+
+/* ===========================
+   DATAFRAME
+=========================== */
+
+div[data-testid="stDataFrame"]{
+
+border-radius:15px;
+
+overflow:hidden;
+
+}
+
+/* ===========================
+   PLOTLY CHARTS
+=========================== */
+
+div[data-testid="stPlotlyChart"]{
+
+background:#111827;
+
+padding:12px;
+
+border-radius:15px;
+
+box-shadow:0px 5px 15px rgba(0,0,0,.30);
+
+}
+
+/* ===========================
+   DIVIDER
+=========================== */
+
+hr{
+
+border:1px solid #374151;
+
+}
+
+/* ===========================
+   MARKDOWN TEXT
+=========================== */
+
+p,
+li{
+
+color:#E5E7EB;
+
+}
